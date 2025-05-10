@@ -1,4 +1,5 @@
 ﻿import '../styles/pages/products.css';
+import { useState } from 'react';
 
 const products = [
   {
@@ -24,7 +25,17 @@ const products = [
   }
 ];
 
-export default function Products() {
+export default function Products({ userRole }) {
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const handleBuy = (product) => {
+    setSelectedProduct(product);
+  };
+
+  const handleCloseForm = () => {
+    setSelectedProduct(null);
+  };
+
   return (
     <main className="products">
       <h1>Our Recycling Services</h1>
@@ -43,14 +54,43 @@ export default function Products() {
               <p>{product.desc}</p>
               <div className="product-details">
                 <p>{product.details}</p>
-                <a href="/contact" className="service-btn">
-                  Request Service
-                </a>
+
+                {userRole === "client" ? (
+                  <button className="buy-btn" onClick={() => handleBuy(product)}>
+                    Buy Now
+                  </button>
+                ) : (
+                  <a href="/contact" className="service-btn">Request Service</a>
+                )}
               </div>
             </div>
           </div>
         ))}
       </div>
+
+      {selectedProduct && (
+        <div className="payment-form-overlay">
+          <div className="payment-form">
+            <h2>Buy {selectedProduct.name}</h2>
+            <form>
+              <label>Name on Card</label>
+              <input type="text" placeholder="John Doe" required />
+              
+              <label>Card Number</label>
+              <input type="text" placeholder="1234 5678 9012 3456" required />
+
+              <label>Expiry Date</label>
+              <input type="text" placeholder="MM/YY" required />
+
+              <label>CVV</label>
+              <input type="text" placeholder="123" required />
+
+              <button type="submit">Confirm Purchase</button>
+              <button type="button" onClick={handleCloseForm}>Cancel</button>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
