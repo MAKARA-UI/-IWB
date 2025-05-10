@@ -1,10 +1,10 @@
 ﻿import '../styles/pages/products.css';
-import { useState } from 'react';
 
 const products = [
   {
     id: 1,
     name: "RAM Recycling",
+    price: 120,
     desc: "Secure data wiping and material recovery",
     img: "ram-recycle.jpg",
     details: "We process DDR3, DDR4, and other memory modules with certified data erasure techniques."
@@ -12,6 +12,7 @@ const products = [
   {
     id: 2,
     name: "Hard Drive Destruction",
+    price: 200,
     desc: "NIST-certified physical destruction",
     img: "hdd-recycle.jpg",
     details: "HDD and SSD shredding with certificate of destruction provided."
@@ -19,23 +20,14 @@ const products = [
   {
     id: 3,
     name: "Motherboard Processing",
+    price: 180,
     desc: "Hazardous material handling",
     img: "mb-recycle.jpg",
     details: "Component recovery and safe disposal of lead, mercury, and other hazardous materials."
   }
 ];
 
-export default function Products({ userRole }) {
-  const [selectedProduct, setSelectedProduct] = useState(null);
-
-  const handleBuy = (product) => {
-    setSelectedProduct(product);
-  };
-
-  const handleCloseForm = () => {
-    setSelectedProduct(null);
-  };
-
+export default function Products({ userRole, onBuyNow }) {
   return (
     <main className="products">
       <h1>Our Recycling Services</h1>
@@ -56,7 +48,7 @@ export default function Products({ userRole }) {
                 <p>{product.details}</p>
 
                 {userRole === "client" ? (
-                  <button className="buy-btn" onClick={() => handleBuy(product)}>
+                  <button className="buy-btn" onClick={() => onBuyNow({ name: product.name, price: product.price })}>
                     Buy Now
                   </button>
                 ) : (
@@ -67,30 +59,6 @@ export default function Products({ userRole }) {
           </div>
         ))}
       </div>
-
-      {selectedProduct && (
-        <div className="payment-form-overlay">
-          <div className="payment-form">
-            <h2>Buy {selectedProduct.name}</h2>
-            <form>
-              <label>Name on Card</label>
-              <input type="text" placeholder="John Doe" required />
-              
-              <label>Card Number</label>
-              <input type="text" placeholder="1234 5678 9012 3456" required />
-
-              <label>Expiry Date</label>
-              <input type="text" placeholder="MM/YY" required />
-
-              <label>CVV</label>
-              <input type="text" placeholder="123" required />
-
-              <button type="submit">Confirm Purchase</button>
-              <button type="button" onClick={handleCloseForm}>Cancel</button>
-            </form>
-          </div>
-        </div>
-      )}
     </main>
   );
 }

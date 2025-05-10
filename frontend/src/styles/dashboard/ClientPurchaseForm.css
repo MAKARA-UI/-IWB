@@ -10,8 +10,9 @@
 
 .payment-container h2 {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   font-size: 24px;
+  font-weight: bold;
   color: #222;
 }
 
@@ -22,22 +23,39 @@
 
 .row {
   display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
-.payment-form input {
+.payment-form input,
+.payment-form select {
   flex: 1;
   padding: 12px;
   font-size: 15px;
   border: 1px solid #ccc;
   border-radius: 6px;
   transition: border-color 0.3s;
+  background-color: #fafafa;
 }
 
-.payment-form input:focus {
+.payment-form input:focus,
+.payment-form select:focus {
   border-color: #00c4cc;
   outline: none;
+  background-color: #fff;
+}
+
+.payment-form label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #444;
+}
+
+.select-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
 }
 
 .client-info {
@@ -64,4 +82,13 @@
 
 .continue-btn:hover {
   background-color: #00aab3;
+}
+
+.single-input {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.payment-form .row input {
+  flex: 1;
 }

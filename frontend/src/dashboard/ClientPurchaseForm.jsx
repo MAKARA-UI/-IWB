@@ -5,6 +5,7 @@ export default function ClientPurchaseForm({ prefillItem = '', prefillAmount = '
   const [formData, setFormData] = useState({
     item: prefillItem,
     amount: prefillAmount,
+    paymentMethod: '',
     email: '',
     firstName: '',
     lastName: '',
@@ -42,9 +43,10 @@ export default function ClientPurchaseForm({ prefillItem = '', prefillAmount = '
         alert('Purchase successful!');
         if (onSubmit) onSubmit(formData);
 
-        // Optional: clear form or close modal
+        // Optional: clear some fields
         setFormData((prev) => ({
           ...prev,
+          paymentMethod: '',
           email: '',
           firstName: '',
           lastName: '',
@@ -81,16 +83,36 @@ export default function ClientPurchaseForm({ prefillItem = '', prefillAmount = '
           />
         </div>
 
-        <div className="client-info">
-          <label>Client Info</label>
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
+        {/* Payment Method Dropdown */}
+       <div className="select-group">
+          <label htmlFor="paymentMethod">Payment Method:</label>
+          <select
+            id="paymentMethod"
+            name="paymentMethod"
+            value={formData.paymentMethod}
             onChange={handleChange}
             required
-          />
+          >
+            <option value="">Select Method</option>
+            <option value="mpesa">M-Pesa</option>
+            <option value="ecocash">EcoCash</option>
+            <option value="mobilebanking">Mobile banking</option>
+          </select>
+        </div>
+
+        {/* Client Info */}
+        <div className="client-info">
+          <label>Client Info</label>
+          <div className="single-input">
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
           <div className="row">
             <input
               type="text"
