@@ -39,7 +39,7 @@ export default function ClientPurchaseForm({ prefillItem = '', prefillAmount = '
         amount: numericAmount
       };
 
-      const res = await fetch(`${API_BASE_URL}/api/purchases`, {
+      const res = await fetch(`${API_BASE_URL}/api/purchase`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(purchaseData)
