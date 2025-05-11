@@ -6,7 +6,7 @@ export default function Login() {
   const [credentials, setCredentials] = useState({
     email: '',
     password: '',
-    role: 'client'  // default to 'client'
+    role: 'client'  // default role
   });
 
   const navigate = useNavigate();
@@ -15,11 +15,28 @@ export default function Login() {
     e.preventDefault();
     console.log('Login attempt:', credentials);
 
-    // Simulate backend auth + redirect
-    if (credentials.role === 'client') {
-      navigate('/client');
-    } else {
-      navigate('/'); // other roles can have different redirects
+    // Role-based redirect simulation
+    switch (credentials.role.toLowerCase()) {
+      case 'client':
+        navigate('/client');
+        break;
+      case 'sales':
+        navigate('/dashboard/sales');
+        break;
+      case 'developer':
+        navigate('/dashboard/dev');
+        break;
+      case 'investor':
+        navigate('/dashboard/investor');
+        break;
+      case 'finance':
+        navigate('/dashboard/finance');
+        break;
+      case 'partner':
+        navigate('/dashboard/partner');
+        break;
+      default:
+        navigate('/home');
     }
   };
 

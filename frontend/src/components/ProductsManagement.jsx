@@ -9,8 +9,8 @@ export default function ProductsManagement({ refreshData }) {  // Removed produc
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    price: 0,
-    stock: 0,
+    price: '',
+    stock: '',
     image: ''
   });
 

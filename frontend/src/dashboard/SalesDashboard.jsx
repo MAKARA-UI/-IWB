@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
 import ProductsManagement from '../components/ProductsManagement';
 import ClientQueries from '../components/ClientQueries';
 import SalesMetrics from '../components/SalesMetrics';
-import ClientPurchaseForm from '../components/ClientPurchaseForm';
+import ClientPurchaseForm from '../dashboard/ClientPurchaseForm';
 import '../styles/dashboard/SalesDashboard.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -13,33 +12,9 @@ export default function SalesDashboard() {
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [products, setProducts] = useState([]);
   const [queries, setQueries] = useState([]);
-  const [authStatus, setAuthStatus] = useState({ 
-    loading: true, 
-    authenticated: false 
-  });
 
   useEffect(() => {
-    const verifyAuth = async () => {
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/sales/verify`, {
-          headers: { 
-            Authorization: `Bearer ${localStorage.getItem('salesToken')}` 
-          }
-        });
-        setAuthStatus({ 
-          loading: false, 
-          authenticated: res.ok 
-        });
-        if (res.ok) fetchInitialData();
-      } catch (error) {
-        console.error('Auth verification failed:', error);
-        setAuthStatus({ 
-          loading: false, 
-          authenticated: false 
-        });
-      }
-    };
-    verifyAuth();
+    fetchInitialData();
   }, []);
 
   const fetchInitialData = async () => {
@@ -100,9 +75,6 @@ export default function SalesDashboard() {
     }
   };
 
-  if (authStatus.loading) return <div className="loading">Loading...</div>;
-  if (!authStatus.authenticated) return <Navigate to="/login" />;
-
   return (
     <div className="sales-dashboard">
       <nav className="dashboard-nav">
@@ -110,12 +82,7 @@ export default function SalesDashboard() {
           onClick={() => setActiveTab('purchase')} 
           className={activeTab === 'purchase' ? 'active' : ''}
         >
-          New Purchase
-        </button>
-        <button 
-          onClick={() => setActiveTab('products')} 
-          className={activeTab === 'products' ? 'active' : ''}
-        >
+       
           Manage Products
         </button>
         <button 

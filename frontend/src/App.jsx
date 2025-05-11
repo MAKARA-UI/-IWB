@@ -6,7 +6,15 @@ import Products from './pages/Products';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
-import ClientDashboard from './dashboard/ClientDashboard'; // ✅ New import
+
+// Dashboards
+import ClientDashboard from './dashboard/ClientDashboard';
+import SalesDashboard from './dashboard/SalesDashboard';
+import DeveloperDashboard from './dashboard/DeveloperDashboard';
+import InvestorDashboard from './dashboard/InvestorDashboard';
+import FinanceDashboard from './dashboard/FinanceDashboard';
+import PartnerDashboard from './dashboard/PartnerDashboard';
+
 import './styles/index.css';
 
 export default function App() {
@@ -21,7 +29,14 @@ export default function App() {
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/client" element={<ClientDashboard />} /> {/* ✅ New route */}
+
+            {/* Role-based dashboards */}
+            <Route path="/client" element={<ClientDashboard />} />
+            <Route path="/dashboard/sales" element={<SalesDashboard />} />
+            <Route path="/dashboard/developer" element={<DeveloperDashboard />} />
+            <Route path="/dashboard/investor" element={<InvestorDashboard />} />
+            <Route path="/dashboard/finance" element={<FinanceDashboard />} />
+            <Route path="/dashboard/partner" element={<PartnerDashboard />} />
           </Routes>
         </main>
         <Footer />
