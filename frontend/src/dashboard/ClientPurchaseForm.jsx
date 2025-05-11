@@ -28,15 +28,27 @@ export default function ClientPurchaseForm({ prefillItem = '', prefillAmount = '
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const numericAmount = parseFloat(formData.amount);
+      const { item, amount, paymentMethod, email, firstName, lastName } = formData;
+
+      if (!item || !paymentMethod || !email || !firstName || !lastName) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      const numericAmount = parseFloat(amount);
       if (isNaN(numericAmount)) {
         throw new Error('Invalid amount value');
       }
 
       const purchaseData = {
-        ...formData,
-        amount: numericAmount
+        item,
+        amount: numericAmount,
+        paymentMethod,
+        email,
+        firstName,
+        lastName
       };
 
       const res = await fetch(`${API_BASE_URL}/api/purchase`, {
@@ -46,17 +58,21 @@ export default function ClientPurchaseForm({ prefillItem = '', prefillAmount = '
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Purchase failed');
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Purchase failed');
+      }
 
       alert('Purchase successful!');
       if (onSubmit) onSubmit(purchaseData);
-      
+
+      // Clear only the editable fields
       setFormData(prev => ({
         ...prev,
         paymentMethod: '',
         email: '',
         firstName: '',
-        lastName: '',
+        lastName: ''
       }));
 
     } catch (err) {
