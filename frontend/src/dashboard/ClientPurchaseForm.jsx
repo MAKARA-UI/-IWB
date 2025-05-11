@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import '../styles/dashboard/ClientPurchaseForm.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-console.log('API_BASE_URL is:', API_BASE_URL);
-
 
 export default function ClientPurchaseForm({ prefillItem = '', prefillAmount = '', onSubmit }) {
   const [formData, setFormData] = useState({
@@ -16,59 +14,76 @@ export default function ClientPurchaseForm({ prefillItem = '', prefillAmount = '
   });
 
   useEffect(() => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       item: prefillItem,
-      amount: prefillAmount,
+      amount: prefillAmount
     }));
   }, [prefillItem, prefillAmount]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Submitting:', formData);
-
     try {
-      const res = await fetch(`${API_BASE_URL}/api/purchase`, {
+      const numericAmount = parseFloat(formData.amount);
+      if (isNaN(numericAmount)) {
+        throw new Error('Invalid amount value');
+      }
+
+      const purchaseData = {
+        ...formData,
+        amount: numericAmount
+      };
+
+      const res = await fetch(`${API_BASE_URL}/api/purchases`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(purchaseData)
       });
 
-      const text = await res.text();
-      const data = text ? JSON.parse(text) : {};
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Purchase failed');
 
-      if (!res.ok) {
-        alert(`Error: ${data.error || res.statusText}`);
-      } else {
-        alert('Purchase successful!');
-        if (onSubmit) onSubmit(formData);
+      alert('Purchase successful!');
+      if (onSubmit) onSubmit(purchaseData);
+      
+      setFormData(prev => ({
+        ...prev,
+        paymentMethod: '',
+        email: '',
+        firstName: '',
+        lastName: '',
+      }));
 
-        setFormData((prev) => ({
-          ...prev,
-          paymentMethod: '',
-          email: '',
-          firstName: '',
-          lastName: '',
-        }));
-      }
     } catch (err) {
-      console.error('Submission failed:', err);
-      alert('Failed to submit. Please try again.');
+      console.error('Submission error:', err);
+      alert(err.message || 'Failed to process purchase');
     }
   };
 
   return (
     <div className="payment-container">
-      <h2>Make a Payment</h2>
+      <h2>Process New Purchase</h2>
       <form className="payment-form" onSubmit={handleSubmit}>
         <div className="row">
-          <input type="text" name="item" value={formData.item} readOnly />
-          <input type="number" name="amount" value={formData.amount} readOnly />
+          <input 
+            type="text" 
+            name="item" 
+            value={formData.item} 
+            readOnly 
+            placeholder="Product Name"
+          />
+          <input
+            type="number"
+            name="amount"
+            value={formData.amount}
+            readOnly
+            placeholder="Amount"
+          />
         </div>
 
         <div className="select-group">
@@ -88,12 +103,12 @@ export default function ClientPurchaseForm({ prefillItem = '', prefillAmount = '
         </div>
 
         <div className="client-info">
-          <label>Client Info</label>
+          <label>Client Information</label>
           <div className="single-input">
             <input
               type="email"
               name="email"
-              placeholder="Email"
+              placeholder="Email Address"
               value={formData.email}
               onChange={handleChange}
               required
@@ -119,7 +134,9 @@ export default function ClientPurchaseForm({ prefillItem = '', prefillAmount = '
           </div>
         </div>
 
-        <button type="submit" className="continue-btn">Continue</button>
+        <button type="submit" className="continue-btn">
+          Complete Purchase
+        </button>
       </form>
     </div>
   );
