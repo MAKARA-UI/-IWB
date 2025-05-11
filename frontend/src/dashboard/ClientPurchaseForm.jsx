@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
-import '../styles/dashboard/ClientPurchaseForm.css'; // Style as needed
+import '../styles/dashboard/ClientPurchaseForm.css';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+console.log('API_BASE_URL is:', API_BASE_URL);
+
 
 export default function ClientPurchaseForm({ prefillItem = '', prefillAmount = '', onSubmit }) {
   const [formData, setFormData] = useState({
@@ -29,21 +33,21 @@ export default function ClientPurchaseForm({ prefillItem = '', prefillAmount = '
     console.log('Submitting:', formData);
 
     try {
-      const res = await fetch('http://localhost:3000/api/purchase', {
+      const res = await fetch(`${API_BASE_URL}/api/purchase`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : {};
 
       if (!res.ok) {
-        alert(`Error: ${data.error}`);
+        alert(`Error: ${data.error || res.statusText}`);
       } else {
         alert('Purchase successful!');
         if (onSubmit) onSubmit(formData);
 
-        // Optional: clear some fields
         setFormData((prev) => ({
           ...prev,
           paymentMethod: '',
@@ -63,28 +67,11 @@ export default function ClientPurchaseForm({ prefillItem = '', prefillAmount = '
       <h2>Make a Payment</h2>
       <form className="payment-form" onSubmit={handleSubmit}>
         <div className="row">
-          <input
-            type="text"
-            name="item"
-            placeholder="Pay for"
-            value={formData.item}
-            onChange={handleChange}
-            required
-            readOnly
-          />
-          <input
-            type="number"
-            name="amount"
-            placeholder="Amount"
-            value={formData.amount}
-            onChange={handleChange}
-            required
-            readOnly
-          />
+          <input type="text" name="item" value={formData.item} readOnly />
+          <input type="number" name="amount" value={formData.amount} readOnly />
         </div>
 
-        {/* Payment Method Dropdown */}
-       <div className="select-group">
+        <div className="select-group">
           <label htmlFor="paymentMethod">Payment Method:</label>
           <select
             id="paymentMethod"
@@ -96,11 +83,10 @@ export default function ClientPurchaseForm({ prefillItem = '', prefillAmount = '
             <option value="">Select Method</option>
             <option value="mpesa">M-Pesa</option>
             <option value="ecocash">EcoCash</option>
-            <option value="mobilebanking">Mobile banking</option>
+            <option value="mobilebanking">Mobile Banking</option>
           </select>
         </div>
 
-        {/* Client Info */}
         <div className="client-info">
           <label>Client Info</label>
           <div className="single-input">
