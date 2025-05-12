@@ -42,7 +42,7 @@ export default function ClientPurchaseForm({ prefillItem = '', prefillAmount = '
         throw new Error('Invalid amount value');
       }
 
-      const purchaseData = {
+      const saleData = {
         item,
         amount: numericAmount,
         paymentMethod,
@@ -51,22 +51,21 @@ export default function ClientPurchaseForm({ prefillItem = '', prefillAmount = '
         lastName
       };
 
-      const res = await fetch(`${API_BASE_URL}/api/purchase`, {
+      const res = await fetch(`${API_BASE_URL}/api/sales`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(purchaseData)
+        body: JSON.stringify(saleData)
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Purchase failed');
+        throw new Error(data.error || 'Sale failed');
       }
 
-      alert('Purchase successful!');
-      if (onSubmit) onSubmit(purchaseData);
+      alert('Sale successful!');
+      if (onSubmit) onSubmit(saleData);
 
-      // Clear only the editable fields
       setFormData(prev => ({
         ...prev,
         paymentMethod: '',
@@ -77,13 +76,13 @@ export default function ClientPurchaseForm({ prefillItem = '', prefillAmount = '
 
     } catch (err) {
       console.error('Submission error:', err);
-      alert(err.message || 'Failed to process purchase');
+      alert(err.message || 'Failed to process sale');
     }
   };
 
   return (
     <div className="payment-container">
-      <h2>Process New Purchase</h2>
+      <h2>Process New Sale</h2>
       <form className="payment-form" onSubmit={handleSubmit}>
         <div className="row">
           <input 

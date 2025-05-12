@@ -1,13 +1,36 @@
 const mongoose = require('mongoose');
 
-const saleSchema = new mongoose.Schema({
-  item: { type: String, required: true },
-  amount: { type: Number, required: true },
-  paymentMethod: { type: String, required: true },
-  email: String,
-  firstName: String,
-  lastName: String,
-  date: { type: Date, default: Date.now }
+const SaleSchema = new mongoose.Schema({
+  item: {
+    type: String,
+    required: true
+  },
+  amount: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  paymentMethod: {
+    type: String,
+    required: true,
+    enum: ['mpesa', 'ecocash', 'mobilebanking']
+  },
+  email: {
+    type: String,
+    required: true
+  },
+  firstName: {
+    type: String,
+    required: true
+  },
+  lastName: {
+    type: String,
+    required: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
 });
 
-module.exports = mongoose.model('Sale', saleSchema);
+module.exports = mongoose.model('Sale', SaleSchema);

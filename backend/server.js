@@ -1,9 +1,9 @@
-// backend/server.js
 require('dotenv').config();
 const express  = require('express');
 const cors     = require('cors');
 const mongoose = require('mongoose');
-const purchaseRoutes = require('./routes/purchase');
+
+const saleRoutes = require('./routes/sales');    
 const productRoutes = require('./routes/products');
 
 const app = express();
@@ -14,12 +14,12 @@ console.log('→ MONGO_URI =', process.env.MONGO_URI);
 console.log('→ PORT      =', process.env.PORT);
 
 mongoose
-  .connect(process.env.MONGO_URI)      // no options needed in Mongoose >=6
+  .connect(process.env.MONGO_URI)
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch(err => console.error('Mongo connection error:', err));
 
 
-app.use('/api/purchase', purchaseRoutes);
+app.use('/api/sales', saleRoutes);
 app.use('/api/products', productRoutes);
 
 const PORT = process.env.PORT || 5000;
