@@ -1,20 +1,35 @@
 ﻿.hero {
-  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-              url('../../assets/images/ewaste-bg.jpg') center/cover;
+  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6));
   min-height: 70vh;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
-  text-align: center;
+  text-align: left;
   color: var(--white);
-  padding: 0 1rem;
+  padding: 2rem;
+}
+
+.hero-text {
+  flex: 1;
+  max-width: 50%;
 }
 
 .hero h1 {
   font-size: 3rem;
   margin-bottom: 1rem;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.hero-image {
+  flex: 1;
+  text-align: center;
+}
+
+.hero-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
 }
 
 .cta-button {
@@ -25,5 +40,5 @@
   border-radius: 4px;
   font-weight: 600;
   margin-top: 1rem;
+  text-decoration: none;
 }
-

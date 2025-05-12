@@ -19,6 +19,21 @@ export default function About() {
             We specialize in recycling RAM, Hard Drives, and Motherboard components, 
             serving clients across Lesotho and neighboring regions.
           </p>
+          <p>
+            Have you ever thought about what happens to your laptop, phone, speakers, keyboard, 
+            printer, and other electronics when they stop working? If not recycled properly, they 
+            can end up in landfills, polluting the environment and harming people and animals.
+          </p>
+          <p>
+            E-waste is a big and growing problem around the world. Because new electronics come out 
+            quickly, many people throw away their old devices after only a few years. In 2019, the 
+            world created 53.6 million tonnes of e-waste. That’s about 7.3 kilograms for every person — 
+            the same weight as 350 cruise ships.
+          </p>
+          <p>
+            How can you get rid of your old electronics in Lesotho? Just contact IWB, Lesotho's 
+            trusted e-waste recycler.
+          </p>
         </div>
 
         <div className="about-stats">
