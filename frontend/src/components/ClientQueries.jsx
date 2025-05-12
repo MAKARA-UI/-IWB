@@ -1,76 +1,62 @@
 import { useState } from 'react';
 import '../styles/dashboard/ClientQueries.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
 export default function ClientQueries({ queries, setQueries }) {
-  const [filter, setFilter] = useState('all');
-  const [responseText, setResponseText] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
 
-  const handleResponse = async (queryId) => {
+  const handleComplete = async (id) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/queries/${queryId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          response: responseText,
-          status: 'complete'
-        })
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/queries/${id}/complete`, {
+        method: 'PATCH'
       });
-
-      if (res.ok) {
-        const updatedQuery = await res.json();
-        setQueries(prev => prev.map(q => 
-          q._id === queryId ? updatedQuery : q
-        ));
-        setResponseText('');
-      }
-    } catch (error) {
-      console.error('Error updating query:', error);
+      if (!res.ok) throw new Error('Failed to update query');
+      const updatedQuery = await res.json();
+      setQueries(prev => prev.map(q => q._id === id ? updatedQuery : q));
+    } catch (err) {
+      console.error(err);
+      alert('Error updating query');
     }
   };
 
-  const filteredQueries = queries.filter(q => 
-    filter === 'all' ? true : q.status === filter
-  );
+  const filteredQueries = queries.filter(q => {
+    if (filterStatus === 'pending') return q.status === 'pending';
+    if (filterStatus === 'complete') return q.status === 'complete';
+    return true;
+  });
 
   return (
     <div className="client-queries">
-      <div className="filter-controls">
-        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-          <option value="all">All Queries</option>
+      <div className="header">
+        <h2>Client Queries</h2>
+        <select
+          className="query-filter"
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+        >
+          <option value="all">All</option>
           <option value="pending">Pending</option>
-          <option value="complete">Completed</option>
+          <option value="complete">Complete</option>
         </select>
       </div>
 
-      <div className="queries-list">
-        {filteredQueries.map(query => (
-          <div key={query._id} className={`query-item ${query.status}`}>
-            <div className="query-header">
-              <span className="status">{query.status}</span>
-              {query.autoResponded && <span className="auto">Auto-responded</span>}
-            </div>
-            <p className="question"><strong>Question:</strong> {query.question}</p>
+      {filteredQueries.length === 0 ? (
+        <p>No queries found for selected filter.</p>
+      ) : (
+        filteredQueries.map((query) => (
+          <div key={query._id} className={`query-card ${query.status}`}>
+            <p><strong>Status:</strong> {query.status}</p>
+            <pre>{query.question}</pre>
             {query.response && (
-              <p className="response"><strong>Response:</strong> {query.response}</p>
+              <p><strong>Auto-response:</strong> {query.response}</p>
             )}
-            
-            {query.status === 'pending' && !query.autoResponded && (
-              <div className="response-section">
-                <textarea
-                  value={responseText}
-                  onChange={(e) => setResponseText(e.target.value)}
-                  placeholder="Type response..."
-                />
-                <button onClick={() => handleResponse(query._id)}>
-                  Send Response
-                </button>
-              </div>
+            {query.status === 'pending' && (
+              <button onClick={() => handleComplete(query._id)}>
+                Mark as Complete
+              </button>
             )}
           </div>
-        ))}
-      </div>
+        ))
+      )}
     </div>
   );
 }

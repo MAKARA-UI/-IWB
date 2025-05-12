@@ -5,13 +5,48 @@ export default function Contact() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    message: ''
+    subject: '',
+    message: '',
+    consent: false
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Add form submission logic here
+    if (!formData.consent) {
+      alert("You must consent to data storage.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/queries`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+          status: 'pending', // Default
+          date: new Date()
+        })
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to send message');
+      }
+
+      alert('Message sent successfully!');
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: '',
+        consent: false
+      });
+    } catch (err) {
+      console.error(err);
+      alert('Error submitting form');
+    }
   };
 
   return (
@@ -23,50 +58,39 @@ export default function Contact() {
 
       <div className="contact-container">
         <form onSubmit={handleSubmit} className="contact-form">
-          <h2>Send a Message</h2>
           <div className="form-group">
-            <label htmlFor="name">Name</label>
-            <input
-              type="text"
-              id="name"
-              value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
-              required
-            />
+            <label>Your Name</label>
+            <input type="text" value={formData.name} required
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
           </div>
           <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
-              required
-            />
+            <label>Your Email</label>
+            <input type="email" value={formData.email} required
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
           </div>
           <div className="form-group">
-            <label htmlFor="message">Message</label>
-            <textarea
-              id="message"
-              rows="5"
-              value={formData.message}
-              onChange={(e) => setFormData({...formData, message: e.target.value})}
-              required
-            ></textarea>
+            <label>Subject</label>
+            <input type="text" value={formData.subject} required
+              onChange={(e) => setFormData({ ...formData, subject: e.target.value })} />
           </div>
-          <button type="submit" className="submit-btn">Submit</button>
+          <div className="form-group">
+            <label>Message</label>
+            <textarea rows="5" value={formData.message} required
+              onChange={(e) => setFormData({ ...formData, message: e.target.value })}></textarea>
+          </div>
+          <div className="form-group">
+            <label>
+              <input
+                type="checkbox"
+                checked={formData.consent}
+                onChange={(e) => setFormData({ ...formData, consent: e.target.checked })}
+              />
+              {' '}
+              I consent to having this website store my submitted information so they can respond to my inquiry.
+            </label>
+          </div>
+          <button type="submit" className="submit-btn">SEND YOUR MESSAGE</button>
         </form>
-
-        <div className="contact-info">
-          <h2>Our Location</h2>
-          <address>
-            <p>123 Recycling Park</p>
-            <p>Maseru, Lesotho</p>
-            <br />
-            <p>Email: info@iwb.co.ls</p>
-            <p>Phone: +266 1234 5678</p>
-          </address>
-        </div>
       </div>
     </main>
   );
