@@ -4,6 +4,7 @@ const express  = require('express');
 const cors     = require('cors');
 const mongoose = require('mongoose');
 const purchaseRoutes = require('./routes/purchase');
+const productRoutes = require('./routes/products');
 
 const app = express();
 app.use(cors());
@@ -17,7 +18,9 @@ mongoose
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch(err => console.error('Mongo connection error:', err));
 
+
 app.use('/api/purchase', purchaseRoutes);
+app.use('/api/products', productRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

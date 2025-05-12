@@ -3,7 +3,7 @@ import '../styles/dashboard/ProductsManagement.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export default function ProductsManagement({ refreshData }) {  // Removed productStock prop
+export default function ProductsManagement({ refreshData }) {
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
   const [formData, setFormData] = useState({
@@ -13,6 +13,7 @@ export default function ProductsManagement({ refreshData }) {  // Removed produc
     stock: '',
     image: ''
   });
+  const [statusMessage, setStatusMessage] = useState('');
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -22,6 +23,7 @@ export default function ProductsManagement({ refreshData }) {  // Removed produc
         setProducts(data);
       } catch (error) {
         console.error('Error fetching products:', error);
+        setStatusMessage('Error fetching products');
       }
     };
     fetchProducts();
@@ -43,13 +45,21 @@ export default function ProductsManagement({ refreshData }) {  // Removed produc
       });
 
       if (res.ok) {
+        setStatusMessage(editingProduct ? 'Product updated successfully!' : 'Product added successfully!');
         refreshData();
-        setFormData({ name: '', description: '', price: 0, stock: 0, image: '' });
+        setFormData({ name: '', description: '', price: '', stock: '', image: '' });
         setEditingProduct(null);
+      } else {
+        const errData = await res.json();
+        setStatusMessage(`Error: ${errData.error || 'Failed to save product.'}`);
       }
     } catch (error) {
       console.error('Error saving product:', error);
+      setStatusMessage('Error: Could not connect to server.');
     }
+
+    // Clear message after 3 seconds
+    setTimeout(() => setStatusMessage(''), 3000);
   };
 
   const handleEdit = (product) => {
@@ -66,6 +76,9 @@ export default function ProductsManagement({ refreshData }) {  // Removed produc
   return (
     <div className="products-management">
       <h2>Manage Products</h2>
+
+      {statusMessage && <p className="status-message">{statusMessage}</p>}
+
       <form onSubmit={handleSubmit} className="product-form">
         <input
           type="text"
