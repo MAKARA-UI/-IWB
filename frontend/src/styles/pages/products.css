@@ -5,11 +5,17 @@
 }
 
 .products h1 {
-  text-align: center;
-  color: var(--primary);
+  background: var(--primary); /* Green container */
+  color: var(--white); /* White text inside */
+  padding: 1rem 2rem;
+  border-radius: 8px;
   margin-bottom: 2rem;
-  font-size: 2.5rem;
+  font-size: 2.2rem;
+  text-align: center;
+  width: 100%; /* Stretch full width */
+  box-sizing: border-box;
 }
+
 
 .product-grid {
   display: grid;

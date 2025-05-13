@@ -1,41 +1,44 @@
-.about-hero {
-  background: var(--primary);
-  color: var(--white);
-  text-align: center;
-  padding: 4rem 1rem;
-}
-
-.about-hero h1 {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-}
-
-.about-content {
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 0 1rem;
-  display: grid;
-  gap: 2rem;
-}
-
-.about-text h2 {
+/* Center Our Story heading now */
+.story-header {
   color: var(--primary);
   margin-bottom: 1rem;
-  text-align: center; /* Center the header */
+  text-align: center; /* CENTERED now */
 }
 
-.about-text p {
-  margin-bottom: 1rem;
-  line-height: 1.7;
-  font-weight: 500; /* Make text a bit bold */
-  text-align: justify; /* Optional: make the text look properly aligned */
+/* Row: left = text, right = gif */
+.about-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: flex-start;
+  margin-bottom: 3rem;
 }
 
+/* Text on the left */
+.about-text {
+  flex: 1 1 55%;
+  text-align: justify;
+}
+
+/* Gif on the right */
+.about-gif {
+  flex: 1 1 40%;
+  text-align: center;
+}
+
+.about-gif img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* Stats section */
 .about-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
   margin-top: 2rem;
+  margin-bottom: 3rem;
 }
 
 .stat-card {
@@ -52,4 +55,29 @@
   color: var(--primary);
   display: block;
   margin-bottom: 0.5rem;
+}
+
+/* About IWB section stays at top now */
+.about-hero {
+  background: var(--primary);
+  color: var(--white);
+  text-align: center;
+  padding: 1.5rem 1rem; /* Reduced the height */
+  margin-bottom: 4rem;
+}
+
+.about {
+  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6));
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column; /* stack top to bottom */
+  justify-content: flex-start; /* stay at top */
+  align-items: stretch; /* stretch full width */
+  text-align: left;
+  color: var(--white);
+  padding: 2rem;
+}
+.stat-card p {
+  color: var(--primary);
+  font-weight: 500;
 }
