@@ -1,48 +1,31 @@
 const express = require('express');
 const router = express.Router();
-const Income = require('../models/Income');
-const { verifyRole } = require('../middleware/auth'); // Role middleware
+const Expense = require('../models/Expense');
+const Sale = require('../models/Sale');
 
-// GET all income entries (finance role only)
-router.get('/', verifyRole(['finance']), async (req, res) => {
-  try {
-    const incomes = await Income.find().sort({ date: -1 });
-    res.json(incomes);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch income records' });
-  }
+// Add expense
+router.post('/', async (req, res) => {
+  const expense = new Expense(req.body);
+  await expense.save();
+  res.json(expense);
 });
 
-// POST new income entry
-router.post('/', verifyRole(['finance']), async (req, res) => {
-  try {
-    const { description, amount, date } = req.body;
-    const newIncome = new Income({ description, amount, date: date || new Date() });
-    const saved = await newIncome.save();
-    res.status(201).json(saved);
-  } catch (err) {
-    res.status(400).json({ error: 'Failed to save income' });
-  }
+// Get all expenses
+router.get('/', async (req, res) => {
+  const expenses = await Expense.find();
+  res.json(expenses);
 });
 
-// PUT (edit income)
-router.put('/:id', verifyRole(['finance']), async (req, res) => {
-  try {
-    const updated = await Income.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(updated);
-  } catch (err) {
-    res.status(400).json({ error: 'Failed to update income' });
-  }
-});
+// Get finance summary
+router.get('/summary', async (req, res) => {
+  const expenses = await Expense.find();
+  const sales = await Sale.find();
 
-// DELETE income entry
-router.delete('/:id', verifyRole(['finance']), async (req, res) => {
-  try {
-    await Income.findByIdAndDelete(req.params.id);
-    res.json({ success: true });
-  } catch (err) {
-    res.status(400).json({ error: 'Failed to delete income' });
-  }
+  const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+  const totalIncome = sales.reduce((sum, s) => sum + s.amount, 0);
+  const profit = totalIncome - totalExpenses;
+
+  res.json({ totalIncome, totalExpenses, profit });
 });
 
 module.exports = router;
