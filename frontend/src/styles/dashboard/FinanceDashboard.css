@@ -1,0 +1,28 @@
+.finance-dashboard {
+  padding: 2rem;
+  max-width: 800px;
+  margin: auto;
+}
+
+.income-form {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.income-form input, .income-form button {
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.income-entry {
+  background: #f1f1f1;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

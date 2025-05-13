@@ -1,0 +1,23 @@
+.developer-dashboard {
+  padding: 2rem;
+}
+
+.dev-files-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.dev-files-section li {
+  margin: 0.5rem 0;
+}
+
+.editor-section textarea {
+  width: 100%;
+  margin-top: 1rem;
+  font-family: monospace;
+}
+
+.status-msg {
+  margin-top: 0.5rem;
+  color: green;
+}

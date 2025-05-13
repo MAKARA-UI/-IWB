@@ -1,0 +1,38 @@
+/* src/styles/dashboard/InvestorDashboard.css */
+.investor-dashboard {
+  padding: 2rem;
+  max-width: 800px;
+  margin: auto;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.investor-dashboard h1 {
+  color: #004d40;
+  margin-bottom: 0.5rem;
+}
+
+.investor-dashboard p {
+  margin-bottom: 1.5rem;
+  color: #555;
+}
+
+.income-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.income-table th,
+.income-table td {
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.income-table th {
+  background-color: #f0f9f8;
+  color: #004d40;
+}
+
+.income-table tr:nth-child(even) {
+  background-color: #f7fcfb;
+}

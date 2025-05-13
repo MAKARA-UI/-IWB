@@ -5,47 +5,34 @@ const Sale = require('../models/Sale');
 const Product = require('../models/Product');
 const Revenue = require('../models/Revenue');
 
+// Handle a new sale and update stock & revenue
 router.post('/', async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
-  
+
   try {
-    // 1. Validate product exists
-    const product = await Product.findOne({ name: req.body.item }).session(session);
-    if (!product) {
-      throw new Error('Product not found');
-    }
+    const { item, amount, paymentMethod, email, firstName, lastName } = req.body;
 
-    // 2. Check stock
-    if (product.stock < 1) {
-      throw new Error('Insufficient stock');
-    }
+    const product = await Product.findOne({ name: item }).session(session);
+    if (!product) throw new Error('Product not found');
+    if (product.stock < 1) throw new Error('Insufficient stock');
 
-    // 3. Update product stock
+    // Update product stock
     product.stock -= 1;
     await product.save({ session });
 
-    // 4. Update revenue
+    // Update revenue
     const revenue = await Revenue.findOneAndUpdate(
       {},
-      { $inc: { total: req.body.amount } },
+      { $inc: { total: amount } },
       { upsert: true, new: true, session }
     );
 
-    // 5. Create sale record
-    const sale = new Sale({
-      item: req.body.item,
-      amount: req.body.amount,
-      paymentMethod: req.body.paymentMethod,
-      email: req.body.email,
-      firstName: req.body.firstName,
-      lastName: req.body.lastName
-    });
+    // Record sale
+    const sale = new Sale({ item, amount, paymentMethod, email, firstName, lastName });
     const savedSale = await sale.save({ session });
 
-    // Commit transaction
     await session.commitTransaction();
-    
     res.status(201).json({
       success: true,
       product: product.name,
@@ -57,7 +44,7 @@ router.post('/', async (req, res) => {
   } catch (error) {
     await session.abortTransaction();
     console.error('Transaction Error:', error);
-    res.status(400).json({ 
+    res.status(400).json({
       success: false,
       error: error.message,
       item: req.body.item,
@@ -65,6 +52,66 @@ router.post('/', async (req, res) => {
     });
   } finally {
     session.endSession();
+  }
+});
+
+// GET: Daily / Weekly / Monthly sales summary
+router.get('/summary', async (req, res) => {
+  const type = req.query.type || 'monthly';
+
+  let groupBy;
+  if (type === 'daily') {
+    groupBy = {
+      year: { $year: "$date" },
+      month: { $month: "$date" },
+      day: { $dayOfMonth: "$date" }
+    };
+  } else if (type === 'weekly') {
+    groupBy = {
+      year: { $year: "$date" },
+      week: { $isoWeek: "$date" }
+    };
+  } else {
+    groupBy = {
+      year: { $year: "$date" },
+      month: { $month: "$date" }
+    };
+  }
+
+  try {
+    const result = await Sale.aggregate([
+      { $group: {
+          _id: groupBy,
+          revenue: { $sum: "$amount" },
+          units: { $sum: 1 }
+        }
+      },
+      { $sort: { "_id": 1 } }
+    ]);
+
+    const formatted = result.map(entry => {
+      let label = '';
+      if (type === 'daily') {
+        label = `${entry._id.year}-${String(entry._id.month).padStart(2, '0')}-${String(entry._id.day).padStart(2, '0')}`;
+      } else if (type === 'weekly') {
+        label = `Week ${entry._id.week}, ${entry._id.year}`;
+      } else {
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                        "Aug", "Sep", "Oct", "Nov", "Dec"];
+        label = `${months[entry._id.month - 1]} ${entry._id.year}`;
+      }
+
+      return {
+        label,
+        revenue: entry.revenue,
+        units: entry.units
+      };
+    });
+
+    res.json(formatted);
+  } catch (err) {
+    console.error('Summary Fetch Error:', err);
+    res.status(500).json({ error: 'Failed to get sales summary' });
   }
 });
 
