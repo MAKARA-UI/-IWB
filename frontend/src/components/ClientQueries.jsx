@@ -1,20 +1,43 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import '../styles/dashboard/ClientQueries.css';
 
-export default function ClientQueries({ queries, setQueries }) {
+export default function ClientQueries() {
+  const [queries, setQueries] = useState([]);
   const [filterStatus, setFilterStatus] = useState('all');
+  const [editingId, setEditingId] = useState(null);
+  const [responseText, setResponseText] = useState('');
 
-  const handleComplete = async (id) => {
+  useEffect(() => {
+    const fetchQueries = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/queries`);
+        const data = await res.json();
+        setQueries(data);
+      } catch (err) {
+        console.error(err);
+        alert('Failed to fetch queries');
+      }
+    };
+    fetchQueries();
+  }, []);
+
+  const handleRespond = async (id) => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/queries/${id}/complete`, {
-        method: 'PATCH'
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/queries/${id}/respond`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ response: responseText }),
       });
-      if (!res.ok) throw new Error('Failed to update query');
-      const updatedQuery = await res.json();
-      setQueries(prev => prev.map(q => q._id === id ? updatedQuery : q));
+
+      if (!res.ok) throw new Error('Failed to respond');
+
+      const updated = await res.json();
+      setQueries((prev) => prev.map(q => q._id === id ? updated : q));
+      setEditingId(null);
+      setResponseText('');
     } catch (err) {
       console.error(err);
-      alert('Error updating query');
+      alert('Error responding to query');
     }
   };
 
@@ -40,19 +63,34 @@ export default function ClientQueries({ queries, setQueries }) {
       </div>
 
       {filteredQueries.length === 0 ? (
-        <p>No queries found for selected filter.</p>
+        <p>No queries found.</p>
       ) : (
-        filteredQueries.map((query) => (
-          <div key={query._id} className={`query-card ${query.status}`}>
-            <p><strong>Status:</strong> {query.status}</p>
-            <pre>{query.question}</pre>
-            {query.response && (
-              <p><strong>Auto-response:</strong> {query.response}</p>
+        filteredQueries.map((q) => (
+          <div key={q._id} className={`query-card ${q.status}`}>
+            <p><strong>Name:</strong> {q.name}</p>
+            <p><strong>Email:</strong> {q.email}</p>
+            <p><strong>Message:</strong> {q.message}</p>
+            <p><strong>Status:</strong> {q.status}</p>
+
+            {q.response && (
+              <p><strong>Response:</strong> {q.response}</p>
             )}
-            {query.status === 'pending' && (
-              <button onClick={() => handleComplete(query._id)}>
-                Mark as Complete
-              </button>
+
+            {q.status === 'pending' && editingId !== q._id && (
+              <button onClick={() => setEditingId(q._id)}>Respond</button>
+            )}
+
+            {editingId === q._id && (
+              <div className="response-form">
+                <textarea
+                  value={responseText}
+                  onChange={(e) => setResponseText(e.target.value)}
+                  rows="4"
+                  placeholder="Type your response..."
+                />
+                <button onClick={() => handleRespond(q._id)}>Send Response</button>
+                <button onClick={() => setEditingId(null)}>Cancel</button>
+              </div>
             )}
           </div>
         ))

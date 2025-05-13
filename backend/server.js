@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 
 const saleRoutes = require('./routes/sales');    
 const productRoutes = require('./routes/products');
+const queryRoutes = require('./routes/queries');
 
 const app = express();
 app.use(cors());
@@ -21,6 +22,7 @@ mongoose
 
 app.use('/api/sales', saleRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/queries', queryRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

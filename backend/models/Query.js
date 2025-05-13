@@ -1,7 +1,18 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const querySchema = new mongoose.Schema({
-  question: {
+  name: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true
+  },
+  subject: {
+    type: String
+  },
+  message: {
     type: String,
     required: true
   },
@@ -20,4 +31,4 @@ const querySchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-export default mongoose.model('Query', querySchema);
+module.exports = mongoose.model('Query', querySchema);
